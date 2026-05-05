@@ -1,1 +1,34 @@
+# ─── Streamlit Configuration for Robin AI ────────────────────────────
+# Cyberpunk dark theme with custom settings
 
+[theme]
+base = "dark"
+primaryColor = "#00f0ff"
+backgroundColor = "#0a0a0f"
+secondaryBackgroundColor = "#0d0d14"
+textColor = "#e0e0e0"
+font = "monospace"
+
+[server]
+maxUploadSize = 10
+enableCORS = false
+enableXsrfProtection = true
+enableWebsocketCompression = true
+maxMessageSize = 200
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+magicEnabled = false
+fastReruns = true
+
+[logger]
+level = "info"
+
+[global]
+developmentMode = false
+unitTest = false
+
+[deprecation]
+showPyplotGlobalUse = false
