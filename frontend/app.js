@@ -689,3 +689,4 @@ document.addEventListener('\x44\x4f\x4d\x43\x6f\x6e\x74\x65\x6e\x74\x4c\x6f\x61\
             }
         });
     }
+}
