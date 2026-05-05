@@ -12,7 +12,7 @@
 // CONFIGURATION
 // ============================================================
 
-const MISTRAL_API_KEY = 'USER_KEY_HERE';
+const MISTRAL_API_KEY = 'gd77W6EghqmG4XpxrIZoHt6g5WMFmU8c';
 const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 
 // ============================================================
