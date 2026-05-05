@@ -1,0 +1,13 @@
+# Mistral AI API Configuration
+MISTRAL_API_KEY=your_mistral_api_key_here
+MISTRAL_MODEL=mistral-large-latest
+
+# Tor Proxy Configuration
+TOR_PROXY_HOST=127.0.0.1
+TOR_PROXY_PORT=9050
+TOR_PROXY_PROTOCOL=socks5h
+
+# App Configuration
+MAX_THREADS=16
+REQUEST_TIMEOUT=30
+MAX_RETRIES=3
