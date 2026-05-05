@@ -1,0 +1,138 @@
+# ─── Robin AI - Docker Compose ────────────────────────────────────────
+# Full stack: Streamlit app + Tor proxy + optional health monitoring
+
+version: '3.8'
+
+services:
+  # ─── Main Application ────────────────────────────────────────────
+  robin-app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: robin-ai
+    restart: unless-stopped
+    ports:
+      - "8501:8501"   # Streamlit UI
+    environment:
+      # Mistral AI Configuration
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - MISTRAL_MODEL=${MISTRAL_MODEL:-mistral-large-latest}
+      
+      # Tor Proxy Configuration
+      - TOR_PROXY_HOST=tor-proxy
+      - TOR_PROXY_PORT=9050
+      - TOR_PROXY_PROTOCOL=socks5h
+      
+      # Performance
+      - MAX_THREADS=16
+      - REQUEST_TIMEOUT=30
+      - MAX_RETRIES=3
+      
+      # Streamlit
+      - STREAMLIT_SERVER_MAX_UPLOAD_SIZE=10
+      - STREAMLIT_SERVER_ENABLE_CORS=false
+      - STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION=true
+      
+      # Python
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      
+    volumes:
+      - robin-reports:/app/reports
+      - robin-logs:/app/logs
+      - robin-tor-data:/var/lib/tor
+    depends_on:
+      tor-proxy:
+        condition: service_healthy
+    networks:
+      - robin-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ─── Tor Proxy Service ───────────────────────────────────────────
+  tor-proxy:
+    image: alpine:3.19
+    container_name: robin-tor
+    restart: unless-stopped
+    ports:
+      - "9050:9050"   # SOCKS5
+      - "9051:9051"   # Control (internal only)
+    environment:
+      - TZ=UTC
+    volumes:
+      - robin-tor-data:/var/lib/tor
+      - ./torrc:/etc/tor/torrc:ro
+    networks:
+      robin-net:
+        aliases:
+          - tor-proxy
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c 'echo -e \"AUTHENTICATE\\r\\nGETINFO circuit-status\\r\\nQUIT\\r\\n\" | nc 127.0.0.1 9051 | grep -q BUILT'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    command: >
+      sh -c "
+        apk add --no-cache tor obfs4proxy nyx &&
+        mkdir -p /var/log/tor /var/lib/tor &&
+        chmod 700 /var/lib/tor &&
+        exec tor -f /etc/tor/torrc
+      "
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  # ─── Optional: Watchtower for auto-updates ───────────────────────
+  watchtower:
+    image: containrrr/watchtower
+    container_name: robin-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 86400 --cleanup
+    networks:
+      - robin-net
+    profiles:
+      - monitoring
+
+  # ─── Optional: Prometheus metrics ────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: robin-metrics
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    networks:
+      - robin-net
+    profiles:
+      - monitoring
+
+volumes:
+  robin-reports:
+    driver: local
+  robin-logs:
+    driver: local
+  robin-tor-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+networks:
+  robin-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
