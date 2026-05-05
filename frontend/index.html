@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robin AI — Dark Web OSINT</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
+</head>
+<body>
+    <div class="matrix-bg"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🦉</span>
+                <div class="logo-text">
+                    <h1>ROBIN AI</h1>
+                    <span class="subtitle">Dark Web OSINT Platform</span>
+                </div>
+            </div>
+            <nav>
+                <div class="status-indicators">
+                    <div class="status-item" id="status-tor">
+                        <span class="dot warning"></span>
+                        <span>Tor: Checking...</span>
+                    </div>
+                    <div class="status-item" id="status-mistral">
+                        <span class="dot" id="mistral-dot"></span>
+                        <span>Mistral: <span id="mistral-status">Not Configured</span></span>
+                    </div>
+                    <div class="status-item live-indicator">
+                        <span>●</span>
+                        <span>SYSTEM ACTIVE</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h2>AI-Powered Dark Web Intelligence</h2>
+            <p>
+                Queries 16 dark web search engines through Tor, scrapes .onion sites,
+                and analyzes results with Mistral AI. Enter a search query below to begin.
+            </p>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Enter investigation query..."
+                    autocomplete="off"
+                />
+                <button id="search-button" onclick="startInvestigation()">
+                    <span>🚀</span> INVESTIGATE
+                </button>
+            </div>
+            <div class="search-options">
+                <label>
+                    Model:
+                    <select id="model-select">
+                        <option value="mistral-large-latest">Mistral Large (Best)</option>
+                        <option value="mistral-small-latest">Mistral Small (Fast)</option>
+                        <option value="mistral-nemo-latest">Mistral Nemo</option>
+                    </select>
+                </label>
+            </div>
+            <div id="error-message" class="error-message" style="display:none;"></div>
+        </section>
+
+        <!-- Pipeline Progress -->
+        <section id="progress-section" class="progress-section" style="display:none;">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-status" id="progress-status">Initializing...</div>
+            <div class="progress-stages">
+                <div class="stage" data-stage="refine">🤖 Refine</div>
+                <div class="stage" data-stage="tor">🧅 Tor</div>
+                <div class="stage" data-stage="search">🔍 Search</div>
+                <div class="stage" data-stage="scrape">🕷️ Scrape</div>
+                <div class="stage" data-stage="analyze">🧠 Analyze</div>
+                <div class="stage" data-stage="report">📄 Report</div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="results-section" style="display:none;">
+            <!-- Metrics -->
+            <div class="metrics-grid" id="metrics-grid"></div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('summary')">📋 Summary</button>
+                <button class="tab" onclick="switchTab('threats')">⚠️ Threats</button>
+                <button class="tab" onclick="switchTab('sources')">🔗 Sources</button>
+                <button class="tab" onclick="switchTab('scraped')">🕷️ Scraped</button>
+                <button class="tab" onclick="switchTab('timing')">⏱️ Timing</button>
+            </div>
+
+            <div id="tab-content" class="tab-content"></div>
+        </section>
+
+        <!-- Pipeline Diagram -->
+        <section class="pipeline-section">
+            <h3>Investigation Pipeline</h3>
+            <div class="pipeline">
+                <div class="pipeline-node">
+                    <div class="node-icon">👤</div>
+                    <div class="node-label">Query</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">🤖</div>
+                    <div class="node-label">LLM Refine</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">🧅</div>
+                    <div class="node-label">Tor Proxy</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">🔍</div>
+                    <div class="node-label">16× Search</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">🕷️</div>
+                    <div class="node-label">Scrape</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">🧠</div>
+                    <div class="node-label">LLM Analyze</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-node">
+                    <div class="node-icon">📄</div>
+                    <div class="node-label">Report</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Robin AI v2.0 — <a href="https://help.hackerai.co">Help</a> — 🔒 Authorized Security Testing Only</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
